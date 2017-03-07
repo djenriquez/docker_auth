@@ -87,6 +87,12 @@ github_auth:
   http_timeout: "10s"
   # How long to wait before revalidating the GitHub token. Optional.
   revalidate_after: "1h"
+  # The Github Web URI in case you are using Github Enterprise.
+  # Includes the protocol, without trailing slash. Optional - defaults to: https://github.com
+  github_web_uri: "https://github.acme.com"
+  # The Github API URI in case you are using Github Enterprise.
+  # Includes the protocol, without trailing slash. - defaults to: https://api.github.com
+  github_api_uri: "https://github.acme.com/api/v3" 
 
 # LDAP authentication.
 # Authentication is performed by first binding to the server, looking up the user entry
@@ -133,6 +139,9 @@ mongo_auth:
 # External authentication - call an external progam to authenticate user.
 # Username and password are passed to command's stdin and exit code is examined.
 # 0 - allow, 1 - deny, 2 - no match, other - error.
+# In case of success, if any output is returned, it is parsed as a JSON object.
+# The "labels" key may contain labels to be passed down to authz, where they can
+# be used in matching. See ext_auth.sh for an example.
 ext_auth:
   command: "/usr/local/bin/my_auth"  # Can be a relative path too; $PATH works.
   args: ["--flag", "--more", "--flags"]
@@ -225,3 +234,10 @@ acl_mongo:
   # the MongoDB server.
   # (See https://golang.org/pkg/time/#ParseDuration for a format description.)
   cache_ttl: "1m"
+
+# External authorization - call an external progam to authorize user.
+# JSON of authz.AuthRequestInfo is passed to command's stdin and exit code is examined.
+# 0 - allow, 1 - deny, other - error.
+ext_authz:
+  command: "/usr/local/bin/my_authz"  # Can be a relative path too; $PATH works.
+  args: ["--flag", "--more", "--flags"]
